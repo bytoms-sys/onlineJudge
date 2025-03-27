@@ -2,8 +2,14 @@ const express = require('express');
 const { DBconnection } = require('./database/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('./model/User');
 const cookieParser = require('cookie-parser');
+const Problem = require('./model/Problem');
+
+const compilerRoutes = require('./compilerBackend/compilerBackend.js');
+require('dotenv').config();
+
 const app = express();
 
 app.use(express.json());
@@ -11,7 +17,104 @@ app.use(express.urlencoded({ extended: true }));
 DBconnection();
 
 app.get('/', (req, res) => {
-  res.send('Hello World! This is home page');
+  res.send('Welcome to Online compiler');
+});
+
+app.use('/compiler', compilerRoutes);
+
+//definining the problems routes
+app.post('/problems', async (req, res) => {
+    //console.log(req.body);
+    try {
+        const { title, description, difficulty, tags, inputFormat, outputFormat, constraints, problemCode } = req.body;
+        //console.log("In try block");
+        //console.log(req.body.problemCode);
+        // Ensure all required fields are provided
+        if (!title || !description || !difficulty || !inputFormat || !outputFormat || !problemCode || !req.body.sampleTestCases || !req.body.testCases ) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+        //console.log("In try block2");
+        let sampleTestCases, testCases;
+        try {
+            sampleTestCases = typeof req.body.sampleTestCases === "string" ? JSON.parse(req.body.sampleTestCases) : req.body.sampleTestCases;
+            testCases = typeof req.body.testCases === "string" ? JSON.parse(req.body.testCases) : req.body.testCases;
+        } catch (error) {
+            return res.status(400).json({ message: 'Invalid JSON format for test cases', error: error.message });
+        }
+        const tagsArray = typeof tags === "string" ? tags.split(",").map(tag => tag.trim()) : tags;
+        //console.log("In try block3");
+        const problemExist = await Problem.findOne({
+            problemCode: problemCode
+        });
+        if(problemExist) {
+            return res.status(400).json({ error: 'Problem already exists', status: false });
+        }
+
+        const problem = await Problem.create({
+            title, description, difficulty, tags, inputFormat, outputFormat, sampleTestCases, testCases, constraints, problemCode
+        });
+
+        //const newProblem = new Problem({ title, description, difficulty, tags, inputFormat, outputFormat, sampleTestCases, testCases, constraints, createdBy });
+        //await newProblem.save();
+
+        res.status(201).json({ message: 'Problem created successfully', problem: problem });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating problem', error: error.message });
+    }
+});
+
+app.get('/problems', async (req, res) => {
+    try {
+        const problems = await Problem.find();
+        res.status(200).json(problems);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching problems', error: error.message });
+    }
+});
+
+app.get('/problems/:problemCode', async (req, res) => {
+    try {
+        const problem = await Problem.findOne({ problemCode: req.params.problemCode });
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+        res.status(200).json(problem);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching problem', error: error.message });
+    }
+});
+
+app.put('/problems/:problemCode', async (req, res) => {
+    try {
+        let { sampleTestCases, testCases } = req.body;
+        try {
+            sampleTestCases = typeof sampleTestCases === "string" ? JSON.parse(sampleTestCases) : sampleTestCases;
+            testCases = typeof testCases === "string" ? JSON.parse(testCases) : testCases;
+        } catch (error) {
+            return res.status(400).json({ message: 'Invalid JSON format for test cases', error: error.message });
+        }
+        const problem = await
+        Problem.findOneAndUpdate({ problemCode: req.params.problemCode }, { ...req.body, sampleTestCases, testCases },
+        { new: true , runValidators: true });
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+        res.status(200).json({ message: 'Problem updated successfully', problem: problem });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating problem', error: error.message });
+    }
+});
+
+app.delete('/problems/:problemCode', async (req, res) => {
+    try {
+        const deletedProblem = await Problem.findOneAndDelete({ problemCode: req.params.problemCode });
+        if (!deletedProblem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+        res.status(200).json({ message: 'Problem deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting problem', error: error.message });
+    }
 });
 
 // app.get('/login', (req, res) => {
@@ -105,3 +208,10 @@ app.post('/register', async (req, res) => {
 app.listen(8000, () => {
   console.log('Server is running on port 8000');
 });
+
+
+//hld
+//crud part wrt problems
+//basic online compiler
+
+// defining the routes for 

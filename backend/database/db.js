@@ -9,7 +9,7 @@ const DBconnection = async () => {
         console.log('Database connected successfully');
     }
     catch (error) {
-        console.log('Database connection failed');
+        console.log('Database connection failed', error.message);
     }
 }
 module.exports = { DBconnection };
