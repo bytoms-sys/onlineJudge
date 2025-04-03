@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const Problem = require('./model/Problem');
 
 const compilerRoutes = require('./compilerBackend/compilerBackend.js');
+const submissionRoutes = require('./submissions/submissionRoutes.js');
 require('dotenv').config();
 
 const app = express();
@@ -21,6 +22,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/compiler', compilerRoutes);
+
+app.use('/submission', submissionRoutes);
 
 //definining the problems routes
 app.post('/problems', async (req, res) => {
@@ -169,10 +172,10 @@ app.post('/register', async (req, res) => {
     //res.send('Hello World! This is register page');
     try {
         //get all the data from the request/frontend/ui/web
-        const { firstName, lastName, email, password } = req.body;
+        const { firstName, lastName, email, password, role } = req.body;
         
         //check all the data is present or not which is given by user
-        if(!firstName || !lastName || !email || !password) {
+        if(!firstName || !lastName || !email || !password || !role ) {
             return res.status(400).json({ error: 'All fields are required', status: false });
         }
 
@@ -181,7 +184,7 @@ app.post('/register', async (req, res) => {
             email: email
         });
         if(emailExist) {
-            return res.status(400).json({ error: 'Email already exists', status: false });
+            return res.status(400).json({ error: 'Email already exists, Please login!!', status: false });
         }
         //encrypt the password
         const hashPassword = await bcrypt.hash(password, 10);
@@ -190,6 +193,7 @@ app.post('/register', async (req, res) => {
             firstName,
             lastName,
             email,
+            role,
             password: hashPassword
         });
         //generate a token for the user and send it to the user
@@ -208,10 +212,3 @@ app.post('/register', async (req, res) => {
 app.listen(8000, () => {
   console.log('Server is running on port 8000');
 });
-
-
-//hld
-//crud part wrt problems
-//basic online compiler
-
-// defining the routes for 

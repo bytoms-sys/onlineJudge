@@ -5,6 +5,7 @@ const { executeCode } = require('./executeCode.js');
 
 
 const router = express.Router();
+exports.router = router;
 
 
 router.use(cors());
