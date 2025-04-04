@@ -10,8 +10,10 @@ const Problem = require('./model/Problem');
 const compilerRoutes = require('./compilerBackend/compilerBackend.js');
 const submissionRoutes = require('./submissions/submissionRoutes.js');
 const loginRoute = require('./login/loginRoutes');
+const logoutRoute = require('./login/logoutRoutes.js');
 const registerRoute = require('./register/registerRoutes');
 const problemRoute = require('./problem/problemRoutes');
+const userDetails = require('./userDetail/userDetails.js')
 require('dotenv').config();
 
 const app = express();
@@ -33,6 +35,10 @@ app.use('/login', loginRoute);
 app.use('/register', registerRoute);
 
 app.use('/problems', problemRoute);
+
+app.use('/logout', logoutRoute);
+
+app.use('./userDetails', userDetails);
 //definining the problems routes
 
 // app.get('/login', (req, res) => {

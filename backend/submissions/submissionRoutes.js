@@ -22,10 +22,10 @@ router.post('/', async (req, res) => {
     try {
         const submission = await Submission.create({
             user: userId,
-            problem: problemCode,
+            problemCode,
             language,
             code,
-            status: 'Pending'
+            status: 'pending'
         });
         res.status(201).json({ message: 'Submission created successfully', submission });
     } catch (error) {
