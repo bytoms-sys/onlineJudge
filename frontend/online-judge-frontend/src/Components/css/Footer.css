@@ -1,0 +1,78 @@
+/* Ensure the footer stays at the bottom */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure the body and html take full height */
+  }
+  
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the root container spans the full viewport height */
+  }
+  
+  footer {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 16px 0 0 0; /* Add margin only at the top */
+    padding: 16px;
+    text-align: center;
+    flex-shrink: 0; /* Prevent the footer from shrinking */
+  }
+  
+  footer .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  footer span {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+  }
+  
+  footer a {
+    color: #007bff;
+    text-decoration: none;
+    margin-right: 16px;
+  }
+  
+  footer a:hover {
+    text-decoration: underline;
+  }
+  
+  footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 0;
+    list-style: none;
+  }
+  
+  footer ul li {
+    margin-right: 16px;
+    font-size: 14px;
+    color: #6b7280;
+  }
+  
+  footer ul li:last-child {
+    margin-right: 0;
+  }
+  
+  /* Dark mode styles */
+  footer.dark {
+    background-color: #1f2937;
+    color: #9ca3af;
+  }
+  
+  footer.dark a {
+    color: #9ca3af;
+  }

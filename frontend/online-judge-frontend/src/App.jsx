@@ -1,17 +1,28 @@
-import React from "react"
-import Footer from "./Components/Footer"
-import Navbar from "./Components/Navbar"
-import Table from "./Components/Table"
+import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './Components/Auth/ProtectedRoute';
+import Navbar from './Components/Navbar.jsx';
+import Footer from './Components/Footer.jsx';
+import Login from './Components/Login.jsx';
+import Register from './Components/Register.jsx';
+import Home from './Components/Home.jsx'; // Assuming you have a Home component
+import './index.css'; // Assuming you have a CSS file for styling
 
 function App() {
-  const items = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
   return (
-    <>
+    <div className="app-container">
       <Navbar />
-      <Table heading="folks" items={items} />
-      <Footer />
-    </>
-  )
+      <main className="content">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
