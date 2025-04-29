@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const { DBconnection } = require('./database/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -17,6 +18,10 @@ const userDetails = require('./userDetail/userDetails.js')
 require('dotenv').config();
 
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173',  // Allow requests from frontend
+  credentials: true  // Allow cookies/session authentication
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
