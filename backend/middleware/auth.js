@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
+const { tokenBlacklist } = require('../utils/tokenBlacklist');
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
 
-  if (!token) {
+  if (!token || tokenBlacklist.has(token)) {
     return res.status(401).json({ error: 'Unauthorized: No token provided' });
   }
 

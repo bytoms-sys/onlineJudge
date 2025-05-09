@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 const User = require('../model/User');  // Adjust path based on your actual model location
 
 const router = express.Router();
@@ -16,6 +17,14 @@ router.post('/', async (req, res) => {
 
         const emailExist = await User.findOne({ email });
 
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ error: 'Invalid email', status: false });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ error: 'Password must be 8+ characters', status: false });
+        }
+
         if (emailExist) {
             return res.status(400).json({ error: 'Email already exists, Please login!!', status: false });
         }
@@ -26,7 +35,7 @@ router.post('/', async (req, res) => {
             firstName,
             lastName,
             email,
-            role,
+            role: 'user',
             password: hashPassword
         });
 

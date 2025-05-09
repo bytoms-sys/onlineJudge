@@ -1,10 +1,12 @@
 const express = require('express');
 const Problem = require('../model/Problem');  // Adjust path based on your actual model location
+const verifyToken = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 
 // Create a new problem
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, isAdmin, async (req, res) => {
     try {
         const { title, description, difficulty, tags, inputFormat, outputFormat, constraints, problemCode } = req.body;
 
@@ -63,7 +65,7 @@ router.get('/:problemCode', async (req, res) => {
 });
 
 // Update a problem by problemCode
-router.put('/:problemCode', async (req, res) => {
+router.put('/:problemCode', verifyToken, isAdmin, async (req, res) => {
     try {
         let { sampleTestCases, testCases } = req.body;
         try {
@@ -91,7 +93,7 @@ router.put('/:problemCode', async (req, res) => {
 });
 
 // Delete a problem by problemCode
-router.delete('/:problemCode', async (req, res) => {
+router.delete('/:problemCode', verifyToken, isAdmin, async (req, res) => {
     try {
         const deletedProblem = await Problem.findOneAndDelete({ problemCode: req.params.problemCode });
 

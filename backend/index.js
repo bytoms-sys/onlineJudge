@@ -50,6 +50,10 @@ app.use('./userDetails', userDetails);
 //   res.send('Hello World! This is login page');
 // });
 
+const errorHandler = require('./middleware/errorHandler');
+// Add at the end (before app.listen):
+app.use(errorHandler);
+
 app.listen(8000, () => {
   console.log('Server is running on port 8000');
 });
