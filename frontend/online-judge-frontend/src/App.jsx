@@ -17,7 +17,6 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
           </Route>
         </Routes>
       </main>

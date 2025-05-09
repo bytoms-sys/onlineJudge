@@ -1,5 +1,8 @@
-/* Register.css */
-.register-container {
+/* Add these to your existing Register.css or create Login.css */
+/* Recommended to create a shared Auth.css for both forms */
+
+/* Shared Auth Styles */
+.auth-container {
     max-width: 500px;
     margin: 2rem auto;
     padding: 2rem;
@@ -8,7 +11,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .register-container h2 {
+  .auth-container h2 {
     text-align: center;
     color: #2d3748;
     font-size: 2rem;
@@ -16,8 +19,10 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   
-  .form-section {
-    margin-bottom: 1.5rem;
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
   
   .input-group {
@@ -46,7 +51,7 @@
     box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
   }
   
-  .submit-btn {
+  .auth-btn {
     width: 100%;
     padding: 1rem;
     background: #4299e1;
@@ -59,30 +64,24 @@
     transition: background 0.3s ease, transform 0.2s ease;
   }
   
-  .submit-btn:hover {
+  .auth-btn:hover {
     background: #3182ce;
     transform: translateY(-1px);
   }
   
-  .submit-btn:disabled {
-    background: #a0aec0;
-    cursor: not-allowed;
-    transform: none;
-  }
-  
-  .login-link {
+  .auth-links {
     text-align: center;
     margin-top: 1.5rem;
     color: #4a5568;
   }
   
-  .login-link a {
+  .auth-links a {
     color: #4299e1;
     text-decoration: none;
     font-weight: 500;
   }
   
-  .login-link a:hover {
+  .auth-links a:hover {
     text-decoration: underline;
   }
   
@@ -97,38 +96,29 @@
     gap: 0.5rem;
   }
   
+  /* Login Specific Adjustments */
+  .login-container {
+    max-width: 400px;
+  }
+  
+  .login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
   /* Responsive Design */
   @media (max-width: 640px) {
-    .register-container {
+    .auth-container {
       margin: 1rem;
       padding: 1.5rem;
       border-radius: 10px;
     }
     
-    .register-container h2 {
+    .auth-container h2 {
       font-size: 1.75rem;
     }
   }
   
-  @media (min-width: 768px) {
-    .form-section {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-    
-    .form-section > div:last-child {
-      grid-column: span 2;
-    }
-  }
-  
-  /* Add some background styling to your main container */
-  body {
-    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 1rem;
-  }
+  /* Keep the existing body styles from Register.css */
