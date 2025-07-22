@@ -25,11 +25,11 @@ const userSchema = new mongoose.Schema({
     submissions: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'submission',
+            ref: 'Submission',
         },
     ],
 });
 
 userSchema.index({ email: 1 }, { unique: true });
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);

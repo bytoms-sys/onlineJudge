@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 const User = require('../model/User');  // Adjust the path based on your actual model location
 
 const router = express.Router();
@@ -14,6 +15,13 @@ router.post('/', async (req, res) => {
       if (!email || !password) {
         return res.status(400).json({ error: 'All fields are required', status: false });
       }
+
+      if (!validator.isEmail(email)) {
+        return res.status(400).json({ error: 'Invalid email format', status: false });
+    }
+    if (!validator.isLength(password, { min: 6 })) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters', status: false });
+    }
   
       // Find user
       const user = await User.findOne({ email }); // Exclude password
@@ -29,7 +37,7 @@ router.post('/', async (req, res) => {
   
       // Generate token
       const token = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );

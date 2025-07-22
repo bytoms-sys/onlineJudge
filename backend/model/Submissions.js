@@ -24,9 +24,12 @@ const submissionSchema = new mongoose.Schema({
         enum: ['Accepted', 'Wrong Answer', 'Time Limit Exceeded', 'Runtime Error', 'Compilation Error', 'pending'],
         required: true 
     },
+    contest: { type: mongoose.Schema.Types.ObjectId, ref: 'contest' },
     executionTime: { type: Number },
     memoryUsed: { type: Number },
+    passedTestCases: { type: Number, default: 0 },
+    totalTestCases: { type: Number, default: 0 },
     submittedAt: { type: Date, default: Date.now } 
 });
 
-module.exports = mongoose.model('Submission', submissionSchema);
+module.exports = mongoose.models.Submission || mongoose.model('Submission', submissionSchema);

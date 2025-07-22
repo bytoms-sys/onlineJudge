@@ -1,0 +1,19 @@
+FROM python:3.10-alpine
+
+# Create non-root user for security
+RUN adduser -D -s /bin/sh judgeuser
+
+# Set working directory
+WORKDIR /app
+
+# Make /app writable by judgeuser
+RUN chown judgeuser:judgeuser /app
+
+# Copy execution script
+COPY execute.py /app/execute.py
+
+# Switch to non-root user
+USER judgeuser
+
+# Default command
+CMD ["python3", "/app/execute.py"]
