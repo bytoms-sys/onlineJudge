@@ -161,8 +161,6 @@ const executeCode = async (code, language, input = '') => {
             NetworkMode: 'none',
             SecurityOpt: [
             'no-new-privileges:true'
-            //'seccomp:/Users/shovnapanda/Documents/online-judge/backend/security-profiles/judge-seccomp.json'
-            // Note: AppArmor isn't available on macOS, only use on Linux
         ],
             ReadonlyRootfs: true,
             Binds: ['/tmp:/tmp:rw'],
@@ -195,7 +193,7 @@ const logs = await container.logs({
     stderr: true
 });
 
-// Add this demultiplexing code
+// demultiplexing code
 let output = '';
 if (Buffer.isBuffer(logs)) {
     // Docker multiplexed logs: first byte is stream type, next 3 bytes are padding

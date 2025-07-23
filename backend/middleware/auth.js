@@ -11,7 +11,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user data to the request
+    req.user = decoded; // Attaching user data to the request
     next();
   } catch (error) {
     res.status(401).json({ error: 'Unauthorized: Invalid token' });

@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { tokenBlacklist } = require('../utils/tokenBlacklist');
-const User = require('../model/User');  // Adjust the path based on your actual model location
+const User = require('../model/User');
 
 const router = express.Router();
 
