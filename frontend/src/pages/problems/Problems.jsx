@@ -19,7 +19,7 @@ const Problems = () => {
     const fetchProblems = async () => {
       try {
         // Fetch problems from backend
-        const response = await fetch('http://localhost:8000/problems', {
+        const response = await fetch('http://localhost:8000/problems/practice', {
           credentials: 'include'
         });
         

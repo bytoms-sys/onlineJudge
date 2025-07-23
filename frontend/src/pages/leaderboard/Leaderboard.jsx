@@ -20,7 +20,8 @@ const Leaderboard = () => {
         }
 
         const data = await response.json();
-        setLeaderboardData(data);
+        //setLeaderboardData(data.Leaderboard || []);
+        setLeaderboardData(data.leaderboard || []);
       } catch (err) {
         console.error('Error fetching leaderboard:', err);
         setError(err.message || 'Failed to load leaderboard');

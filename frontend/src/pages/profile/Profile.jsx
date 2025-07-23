@@ -14,10 +14,11 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         // Fetch user details from the backend
-        const response = await fetch(`http://localhost:8000/userDetails/${user._id}`, {
+        //const response = await fetch(`http://localhost:8000/userDetails/${user._id}`, {
+        const response = await fetch(`http://localhost:8000/userDetails`, {
           credentials: 'include'
         });
-
+        console.log('Response:', response);
         if (!response.ok) {
           throw new Error('Failed to fetch profile data');
         }

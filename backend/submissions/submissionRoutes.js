@@ -11,7 +11,7 @@ const redisClient = require('../utils/redisClient');
 
 const router = express.Router();
 
-router.use(cors());
+// router.use(cors());
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
@@ -86,6 +86,71 @@ async function evaluateSubmission(submission, problem) {
     }
 }
 
+// Define the new route
+// GET /submission/stats/:userId
+// router.get('/stats/:userId', verifyToken, async (req, res) => {
+//     try {
+//         const { userId } = req.params;
+
+//         // Example: Count submissions by status
+//         const totalSubmissions = await Submission.countDocuments({ userId: userId });
+//         const acceptedCount = await Submission.countDocuments({ userId: userId, status: 'Accepted' });
+//         const failedCount = await Submission.countDocuments({ userId: userId, status: { $ne: 'Accepted' } });
+        
+//         // Ensure user is authorized to see this data if needed
+//         if (req.user.id !== userId) {
+//             return res.status(403).json({ error: 'Forbidden' });
+//         }
+        
+//         res.status(200).json({
+//             status: true,
+//             stats: {
+//                 total: totalSubmissions,
+//                 accepted: acceptedCount,
+//                 failed: failedCount
+//             }
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({ status: false, error: 'Error fetching submission stats', message: error.message });
+//     }
+// });
+router.get('/stats/:userId', verifyToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Only allow the user or admin to see this
+    if (req.user.id !== userId && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const submissions = await Submission.find({ user: userId });
+    const totalSubmissions = submissions.length;
+    const acceptedSubmissions = submissions.filter(s => s.status === 'Accepted').length;
+
+    // Unique problems solved
+    const solvedProblems = new Set();
+    submissions.forEach(s => {
+      if (s.status === 'Accepted') solvedProblems.add(s.problemCode);
+    });
+
+    // Recent submissions (last 5)
+    const recentSubmissions = await Submission.find({ user: userId })
+      .sort({ submittedAt: -1 })
+      .limit(5)
+      .select('problemCode status submittedAt');
+
+    res.status(200).json({
+      totalSubmissions,
+      acceptedSubmissions,
+      successRate: totalSubmissions ? Math.round((acceptedSubmissions / totalSubmissions) * 100) : 0,
+      problemsSolved: solvedProblems.size,
+      recentSubmissions
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user stats' });
+  }
+});
 // Submit solution to any problem (contest or practice)
 router.post('/', async (req, res) => {
     const { userId, problemCode, language, code } = req.body;

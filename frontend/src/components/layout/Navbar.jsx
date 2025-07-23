@@ -40,7 +40,12 @@ const Navbar = () => {
                 >
                   Leaderboard
                 </Link>
-                
+                <Link
+                  to="/contests"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Contests
+                </Link>
                 {/* Admin-specific navigation items */}
                 {isAdmin && (
                   <Link

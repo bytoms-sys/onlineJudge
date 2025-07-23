@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 
 const ProblemDetail = () => {
-  const { problemCode } = useParams();
+  const { problemCode, contestId } = useParams();
   const navigate = useNavigate();
   
   const [problem, setProblem] = useState(null);
@@ -14,6 +14,7 @@ const ProblemDetail = () => {
   const [language, setLanguage] = useState('javascript');
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
+  const pollingRef = useRef(null);
   
   // Fetch problem details when component mounts
   useEffect(() => {
@@ -57,17 +58,31 @@ const ProblemDetail = () => {
     setSubmitResult(null);
     
     try {
-      const response = await fetch(`http://localhost:8000/problems/${problemCode}/submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          language,
-          code
-        })
-      });
+      let response;
+      if (contestId) {
+        // Contest submission
+        response = await fetch(`http://localhost:8000/contests/${contestId}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            problemCode,
+            language,
+            code
+          })
+        });
+      } else {
+        // Practice submission
+        response = await fetch(`http://localhost:8000/problems/${problemCode}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            language,
+            code
+          })
+        });
+      }
       
       const data = await response.json();
       
@@ -96,6 +111,34 @@ const ProblemDetail = () => {
       setSubmitting(false);
     }
   };
+
+  // Poll for submission status if pending
+  useEffect(() => {
+    if (submitResult?.submissionId && submitResult.status === 'pending') {
+      pollingRef.current = setInterval(async () => {
+        try {
+          const res = await fetch(`http://localhost:8000/submission/${submitResult.submissionId}`, {
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const submission = await res.json();
+            if (submission.status !== 'pending') {
+              setSubmitResult(prev => ({
+                ...prev,
+                status: submission.status
+              }));
+              clearInterval(pollingRef.current);
+            }
+          }
+        } catch (err) {
+          // Optionally handle error
+          console.error('Error polling submission status:', err);
+        }
+      }, 2000);
+
+      return () => clearInterval(pollingRef.current);
+    }
+  }, [submitResult?.submissionId, submitResult?.status]);
   
   if (loading) {
     return (

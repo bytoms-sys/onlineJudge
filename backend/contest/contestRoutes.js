@@ -38,15 +38,24 @@ router.get('/', async (req, res) => {
 });
 
 // Get contest details
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(404).json({ error: 'Contest not found' });
-        }
         const contest = await Contest.findById(req.params.id).populate('problems');
         if (!contest) return res.status(404).json({ error: 'Contest not found' });
-        res.status(200).json(contest);
+
+        console.log('req.user.id:', req.user.id);
+        console.log('participants:', contest.participants.map(p => p.toString()));
+
+        let isRegistered = false;
+        if (req.user && contest.participants.some(p =>
+            (typeof p.equals === 'function' ? p.equals(req.user.id) : p === req.user.id)
+        )) {
+            isRegistered = true;
+        }
+
+        res.status(200).json({ ...(contest.toObject ? contest.toObject() : contest), isRegistered });
     } catch (error) {
+        console.error(error); // <--- Add this
         res.status(500).json({ error: error.message });
     }
 });

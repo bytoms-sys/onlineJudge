@@ -5,6 +5,10 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './pages/auth/ProtectedRoute';
+import ContestList from "./pages/contest/ContestList";
+import ContestDetail from "./pages/contest/ContestDetail";
+import ContestForm from "./pages/admin/ContestForm";
+import ContestLeaderboard from "./pages/contest/ContestLeaderboard";
 
 // Eager load critical pages
 import Home from './pages/Home';
@@ -80,6 +84,10 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/contests" element={<ContestList />} />
+                <Route path="/contests/:id" element={<ContestDetail />} />
+                <Route path="/contests/:id/leaderboard" element={<ContestLeaderboard />} />
+                <Route path="/contests/:contestId/problems/:problemCode" element={<ProblemDetail />} />
                 
                 {/* Protected routes - require authentication */}
                 <Route element={<ProtectedRoute />}>
@@ -88,6 +96,9 @@ function App() {
                   <Route path="/submissions" element={<Submissions />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/admin/contests/create" element={<ContestForm />} />
+                  //<Route path="/contests/:contestId/problems/:problemCode" element={<ProblemDetail />} />
+                  <Route path="/admin/contests/edit/:id" element={<ContestForm editMode={true} />} />
                 </Route>
                 
                 {/* Admin routes - require admin role */}
