@@ -9,6 +9,9 @@ import ContestList from "./pages/contest/ContestList";
 import ContestDetail from "./pages/contest/ContestDetail";
 import ContestForm from "./pages/admin/ContestForm";
 import ContestLeaderboard from "./pages/contest/ContestLeaderboard";
+import AdminProblemCreate from './pages/admin/AdminProblemCreate';
+import AdminProblemEdit from './pages/admin/AdminProblemEdit';
+import AdminSubmissions from './pages/admin/AdminSubmissions';
 
 // Eager load critical pages
 import Home from './pages/Home';
@@ -104,6 +107,9 @@ function App() {
                 {/* Admin routes - require admin role */}
                 <Route element={<ProtectedRoute requireAdmin={true} />}>
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/problems/create" element={<AdminProblemCreate />} />
+                  <Route path="/admin/problems/edit/:problemCode" element={<AdminProblemEdit />} />
+                  <Route path="/admin/submissions" element={<AdminSubmissions />} />
                 </Route>
                 
                 {/* Error routes */}

@@ -1,9 +1,10 @@
 const express = require('express');
+const router = express.Router();
 const User = require('../model/User');
+const Problem = require('../model/Problem');
+const Submission = require('../model/Submissions');
 const verifyToken = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
-
-const router = express.Router();
 
 // Get all users (admin only)
 router.get('/users', verifyToken, isAdmin, async (req, res) => {
@@ -37,6 +38,30 @@ router.post('/users/:id/promote', verifyToken, isAdmin, async (req, res) => {
     } catch (error) {
         res.status(500).json({ status: false, error: error.message });
     }
+});
+
+router.get('/stats', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const totalProblems = await Problem.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalSubmissions = await Submission.countDocuments();
+    const acceptedSubmissions = await Submission.countDocuments({ status: 'Accepted' });
+    const acceptanceRate = totalSubmissions
+      ? Math.round((acceptedSubmissions / totalSubmissions) * 100)
+      : 0;
+
+    res.json({
+      status: true,
+      stats: {
+        totalProblems,
+        totalUsers,
+        totalSubmissions,
+        acceptanceRate
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
 });
 
 module.exports = router;

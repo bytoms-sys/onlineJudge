@@ -8,6 +8,7 @@ const isAdmin = require('../middleware/isAdmin');
 const { executeCode } = require('../compilerBackend/executeCode');
 const { submissionQueue } = require('../utils/queueConfig');
 const redisClient = require('../utils/redisClient');
+const axios = require('axios');
 
 const router = express.Router();
 
@@ -30,8 +31,18 @@ async function evaluateSubmission(submission, problem) {
     return str.replace(/\s+/g, ' ').trim();
 }
     for (const testCase of problem.testCases) {
-        try {
-            const output = await executeCode(submission.code, submission.language, testCase.input);
+    try {
+        let output;
+        if (submission.language === 'cpp' || submission.language === 'c++') {
+            const url = process.env.CPP_COMPILER_URL;
+            const response = await axios.post(url, {
+                code: submission.code,
+                input: testCase.input
+            });
+            output = response.data.output;
+        } else {
+            output = await executeCode(submission.code, submission.language, testCase.input);
+        }
             console.log(`Test case: Expected "${testCase.output}" (${testCase.output.length}), Got "${output}" (${output.length})`);
             const normalizedOutput = normalizeOutput(output);
             const normalizedExpected = normalizeOutput(testCase.output);
@@ -294,6 +305,20 @@ router.get('/user/:userId', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching submissions', error: error.message });
     }
+});
+
+// Get all submissions (admin only)
+router.get('/', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const submissions = await Submission.find()
+      .sort({ submittedAt: -1 })
+      .limit(100)
+      .populate('user', 'firstName lastName email')
+      .lean();
+    res.status(200).json(submissions);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching submissions', error: error.message });
+  }
 });
 
 // router.get('/recent', async (req, res) => {
