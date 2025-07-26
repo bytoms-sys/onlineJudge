@@ -13,6 +13,9 @@ const ContestForm = ({ editMode = false }) => {
   });
   const [loading, setLoading] = useState(editMode);
 
+  // NEW: State for all contest problems
+  const [allProblems, setAllProblems] = useState([]);
+
   // Fetch contest data if editing
   useEffect(() => {
     if (editMode && id) {
@@ -25,15 +28,33 @@ const ContestForm = ({ editMode = false }) => {
             description: data.description || "",
             startTime: data.startTime ? data.startTime.slice(0, 16) : "",
             endTime: data.endTime ? data.endTime.slice(0, 16) : "",
-            problems: data.problems || [],
+            problems: data.problems?.map(p => p._id || p) || [],
           });
         })
         .finally(() => setLoading(false));
     }
   }, [editMode, id]);
 
+  // NEW: Fetch all problems and filter for isPractice === false
+  useEffect(() => {
+    fetch("http://localhost:8000/problems", { credentials: "include" })
+      .then(res => res.json())
+      .then(data => {
+        const filtered = Array.isArray(data)
+          ? data.filter(p => p.isPractice === false)
+          : [];
+        setAllProblems(filtered);
+      });
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // NEW: Handle multi-select for problems
+  const handleProblemsChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+    setForm({ ...form, problems: selected });
   };
 
   const handleSubmit = async (e) => {
@@ -101,7 +122,33 @@ const ContestForm = ({ editMode = false }) => {
             required
           />
         </div>
-        {/* You can add a multi-select for problems here if needed */}
+        {/* NEW: Multi-select for contest problems */}
+        <div>
+          <label className="block mb-1 font-medium">Select Problems for Contest</label>
+<div className="border rounded px-3 py-2 max-h-40 overflow-y-auto">
+  {allProblems.length === 0 && (
+    <div className="text-gray-500 text-sm">No contest problems available.</div>
+  )}
+  {allProblems.map((p) => (
+    <label key={p._id} className="flex items-center space-x-2 py-1">
+      <input
+        type="checkbox"
+        value={p._id}
+        checked={form.problems.includes(p._id)}
+        onChange={e => {
+          if (e.target.checked) {
+            setForm({ ...form, problems: [...form.problems, p._id] });
+          } else {
+            setForm({ ...form, problems: form.problems.filter(id => id !== p._id) });
+          }
+        }}
+      />
+      <span>{p.title} <span className="text-xs text-gray-500">({p.problemCode})</span></span>
+    </label>
+  ))}
+</div>
+<div className="text-xs text-gray-500 mt-1">Only non-practice problems are shown.</div>
+        </div>
         <button
           type="submit"
           className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
